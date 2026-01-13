@@ -28,7 +28,7 @@ fun CategoryItem(
     Column(
         modifier = Modifier
             .width(100.dp)
-            .height(90.dp)
+            .height(58.dp)
             .clickable { onClick() }
             .background(backgroundColor, RoundedCornerShape(16.dp))
             .padding(8.dp),
@@ -42,7 +42,7 @@ fun CategoryItem(
                 .decoderFactory(SvgDecoder.Factory()) // Isso permite ler SVGs
                 .build(),
             contentDescription = category.name,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(20.dp),
             colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(mainColor) // Pinta o SVG com a cor do banco!
         )
 

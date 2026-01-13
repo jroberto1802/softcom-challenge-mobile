@@ -51,7 +51,7 @@ fun ProductCard(
                 AsyncImage(
                     model = product.imageUrl,
                     contentDescription = product.name,
-                    modifier = Modifier.fillMaxSize().padding(12.dp),
+                    modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Fit
                 )
 

@@ -28,10 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.softcomchallengejunior.ui.components.ProductCard
 import com.example.softcomchallengejunior.ui.home.HomeViewModel
+import com.example.softcomchallengejunior.ui.theme.Poppins
 import com.example.softcomchallengejunior.ui.theme.SoftcomChallengeJuniorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,14 +63,16 @@ class MainActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .statusBarsPadding() // Evita que a logo fique sob a barra de status
-                                .padding(vertical = 16.dp),
+                                .statusBarsPadding()
+                                .padding(top = 36.dp)
+                                .padding(bottom = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.logo_pet_friends),
                                 contentDescription = "Logo Pet Friends",
-                                modifier = Modifier.height(50.dp)
+                                modifier = Modifier.height(50.dp).fillMaxSize(),
+                                contentScale = ContentScale.Fit
                             )
                         }
                     }
@@ -76,6 +84,20 @@ class MainActivity : ComponentActivity() {
                             .background(Color.White)
                     ) {
                         val searchQuery by viewModel.searchQuery.collectAsState()
+
+                        Text(
+                            text = "Tudo para seu melhor amigo",
+                            fontSize = 14.sp,
+                            fontFamily = Poppins,
+                            fontWeight = FontWeight.Medium,
+                            lineHeight = 16.sp,
+                            color = Color(0xFF6B7280),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .align(Alignment.CenterHorizontally) // Garante o alinhamento na Column
+                        )
 
                         OutlinedTextField(
                             value = searchQuery,
