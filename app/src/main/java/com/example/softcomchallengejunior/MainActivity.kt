@@ -1,6 +1,7 @@
 package com.example.softcomchallengejunior
 
 import CategoryItem
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,11 +34,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.softcomchallengejunior.ui.cart.CartViewModel
+import com.example.softcomchallengejunior.ui.components.BottomNavigationBar
+import com.example.softcomchallengejunior.ui.components.CartSummaryBar
 import com.example.softcomchallengejunior.ui.components.ProductCard
 import com.example.softcomchallengejunior.ui.home.HomeViewModel
 import com.example.softcomchallengejunior.ui.theme.Poppins
 import com.example.softcomchallengejunior.ui.theme.SoftcomChallengeJuniorTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -54,6 +61,9 @@ class MainActivity : ComponentActivity() {
                 val products by viewModel.filteredProducts.collectAsState()
                 val selectedId by viewModel.selectedCategoryId.collectAsState()
                 val searchQuery by viewModel.searchQuery.collectAsState()
+                val cartViewModel: CartViewModel = hiltViewModel()
+                val totalItems by cartViewModel.totalItems.collectAsState()
+                val totalPrice by cartViewModel.totalPrice.collectAsState()
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -65,8 +75,8 @@ class MainActivity : ComponentActivity() {
                                 .background(
                                     brush = Brush.linearGradient(
                                         colors = listOf(
-                                            Color(0xFF4ECDC4).copy(alpha = 0.05f),
-                                            Color(0xFFFF6B9D).copy(alpha = 0.05f)
+                                            Color(0x0DFF6B9D),
+                                            Color(0x0D4ECDC4)//.copy(alpha = 0.05f)
                                         )
                                     )
                                 ),
@@ -99,6 +109,25 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
+                    },
+                    bottomBar = {
+                        Column {
+                            // Exibe a barra apenas se houver itens
+                            CartSummaryBar(
+                                totalItems = totalItems,
+                                totalPrice = totalPrice,
+                                onViewCartClick = {
+                                    // Navegação para a CartActivity (implementaremos em breve)
+                                    // val intent = Intent(this@MainActivity, CartActivity::class.java)
+                                    // startActivity(intent)
+                                }
+                            )
+
+                            BottomNavigationBar(
+                                currentRoute = "home",
+                                onItemClick = { item -> /* Lógica de navegação */ }
+                            )
+                        }
                     }
                 ) { innerPadding ->
                     LazyColumn(
@@ -113,7 +142,12 @@ class MainActivity : ComponentActivity() {
                                 onValueChange = { viewModel.onSearchQueryChanged(it) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 16.dp, bottom = 24.dp, start = 16.dp, end = 16.dp),
+                                    .padding(
+                                        top = 16.dp,
+                                        bottom = 24.dp,
+                                        start = 16.dp,
+                                        end = 16.dp
+                                    ),
                                 placeholder = { Text("O que você procura?") },
                                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                                 shape = RoundedCornerShape(25.dp),
@@ -127,7 +161,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                         item {
-                            // Carrossel de Categorias (Filtro)
                             LazyRow(
                                 modifier = Modifier.fillMaxWidth(),
                                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -144,7 +177,6 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(24.dp))
                         }
 
-                        // Seções por Categoria
                         val categoriesToDisplay = if (selectedId != null) {
                             categories.filter { it.id == selectedId }
                         } else {
@@ -153,7 +185,7 @@ class MainActivity : ComponentActivity() {
 
                         items(categoriesToDisplay) { category ->
                             val categoryProducts = products.filter { it.categoryId == category.id }
-                            
+
                             if (categoryProducts.isNotEmpty()) {
                                 Column(
                                     modifier = Modifier
@@ -163,13 +195,11 @@ class MainActivity : ComponentActivity() {
                                     Text(
                                         text = category.name,
                                         fontSize = 18.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Bold,
                                         fontFamily = Poppins,
-                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                        color = Color(0xFF2D3748)
-
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                                     )
-                                    
+
                                     LazyRow(
                                         modifier = Modifier.fillMaxWidth(),
                                         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -179,7 +209,12 @@ class MainActivity : ComponentActivity() {
                                             Box(modifier = Modifier.width(160.dp)) {
                                                 ProductCard(
                                                     product = product,
-                                                    onClick = { /* Abrir Modal */ }
+                                                    onClick = {
+                                                        val intent = Intent(this@MainActivity, ProductDetailActivity::class.java).apply {
+                                                            putExtra("PRODUCT_JSON", Json.encodeToString(product))
+                                                        }
+                                                        startActivity(intent)
+                                                    }
                                                 )
                                             }
                                         }

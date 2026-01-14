@@ -34,18 +34,18 @@ fun ProductCard(
     Card(
         modifier = Modifier
             .fillMaxWidth() // Deixa a Grid controlar a largura
-            .padding(4.dp)   // Pequeno respiro entre os cards
+            .padding(4.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column {
-            // 1. CONTAINER DE IMAGEM COM ALTURA FIXA
+            // 1. CONTAINER DE IMAGEM
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp) // Altura fixa garante simetria visual
+                    .height(150.dp)
                     .background(Color.White)
             ) {
                 AsyncImage(

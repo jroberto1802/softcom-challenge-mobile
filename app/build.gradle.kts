@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
-    // 1. Trocamos kapt por ksp
     alias(libs.plugins.kotlin.ksp)
 }
 
@@ -72,6 +71,9 @@ dependencies {
 
     // Hilt (Dependency Injection)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
@@ -95,4 +97,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Room
+    implementation(libs.androidx.room.runtime) // Biblioteca principal
+    implementation(libs.androidx.room.ktx)     // Suporte para Coroutines e Flow (Obrigatório!)
+    ksp(libs.androidx.room.compiler)           // O processador que faz a mágica acontecer
 }
