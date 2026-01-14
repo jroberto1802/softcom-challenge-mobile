@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -22,10 +23,9 @@ fun ProductCard(
     product: ProductDto,
     onClick: () -> Unit
 ) {
-    // 1. Lógica consolidada: É promoção se a flag for true E o preço promo existir
     val showPromotion = product.isPromotion && product.promotionPrice != null
 
-    // 2. Cálculo do percentual (calculado apenas se necessário)
+    // Cálculo do percentual (calculado apenas se necessário)
     val discountPercentage = if (showPromotion) {
         val discount = ((product.price - product.promotionPrice!!) / product.price) * 100
         discount.toInt()
@@ -46,7 +46,7 @@ fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp) // Altura fixa garante simetria visual
-                    .background(Color(0xFFF5F5F5))
+                    .background(Color.White)
             ) {
                 AsyncImage(
                     model = product.imageUrl,
@@ -56,7 +56,22 @@ fun ProductCard(
                 )
 
                 if (showPromotion) {
-                    // Badge de desconto (já implementado)
+                    // Badge de desconto
+                    Surface(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.TopStart),
+                        color = Color(0xFFEF4444),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "$discountPercentage% off",
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
 
@@ -88,7 +103,7 @@ fun ProductCard(
                             text = "R$ ${String.format("%.2f", product.promotionPrice)}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF4081)
+                            color = Color(0xFFFF6B9D)
                         )
                     } else {
                         // Spacer para manter o alinhamento quando não há preço antigo
@@ -97,7 +112,7 @@ fun ProductCard(
                             text = "R$ ${String.format("%.2f", product.price)}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color(0xFF2D3748)
                         )
                     }
                 }

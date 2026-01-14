@@ -30,8 +30,7 @@ fun CategoryItem(
             .width(100.dp)
             .height(58.dp)
             .clickable { onClick() }
-            .background(backgroundColor, RoundedCornerShape(16.dp))
-            .padding(8.dp),
+            .background(backgroundColor, RoundedCornerShape(16.dp)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

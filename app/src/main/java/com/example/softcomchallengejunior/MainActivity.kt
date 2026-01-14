@@ -9,10 +9,8 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,12 +25,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.softcomchallengejunior.ui.components.ProductCard
@@ -52,10 +50,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SoftcomChallengeJuniorTheme {
-                // Observando os estados do ViewModel
                 val categories by viewModel.categories.collectAsState()
                 val products by viewModel.filteredProducts.collectAsState()
                 val selectedId by viewModel.selectedCategoryId.collectAsState()
+                val searchQuery by viewModel.searchQuery.collectAsState()
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -64,88 +62,129 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .statusBarsPadding()
-                                .padding(top = 36.dp)
-                                .padding(bottom = 8.dp),
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFF4ECDC4).copy(alpha = 0.05f),
+                                            Color(0xFFFF6B9D).copy(alpha = 0.05f)
+                                        )
+                                    )
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo_pet_friends),
-                                contentDescription = "Logo Pet Friends",
-                                modifier = Modifier.height(50.dp).fillMaxSize(),
-                                contentScale = ContentScale.Fit
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 32.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_pet_friends),
+                                    contentDescription = "Logo Pet Friends",
+                                    modifier = Modifier
+                                        .height(50.dp)
+                                        .fillMaxWidth(),
+                                    contentScale = ContentScale.Fit
+                                )
+                                Text(
+                                    text = "Tudo para seu melhor amigo",
+                                    fontSize = 14.sp,
+                                    fontFamily = Poppins,
+                                    fontWeight = FontWeight.Medium,
+                                    lineHeight = 16.sp,
+                                    color = Color(0xFF6B7280),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp)
+                                )
+                            }
                         }
                     }
                 ) { innerPadding ->
-                    Column(
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
                             .background(Color.White)
                     ) {
-                        val searchQuery by viewModel.searchQuery.collectAsState()
-
-                        Text(
-                            text = "Tudo para seu melhor amigo",
-                            fontSize = 14.sp,
-                            fontFamily = Poppins,
-                            fontWeight = FontWeight.Medium,
-                            lineHeight = 16.sp,
-                            color = Color(0xFF6B7280),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .align(Alignment.CenterHorizontally) // Garante o alinhamento na Column
-                        )
-
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { viewModel.onSearchQueryChanged(it) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            placeholder = { Text("O que você procura?") },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                            shape = RoundedCornerShape(25.dp),
-                            singleLine = true,
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                containerColor = Color(0xFFF5F5F5),
-                                unfocusedBorderColor = Color.Transparent,
-                                focusedBorderColor = Color.LightGray
-                            )
-                        )
-                        // 2. CARROSSEL DE CATEGORIAS
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(categories) { category ->
-                                CategoryItem(
-                                    category = category,
-                                    isSelected = category.id == selectedId,
-                                    onClick = { viewModel.selectCategory(category.id) }
+                        item {
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { viewModel.onSearchQueryChanged(it) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp, bottom = 24.dp, start = 16.dp, end = 16.dp),
+                                placeholder = { Text("O que você procura?") },
+                                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                shape = RoundedCornerShape(25.dp),
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    containerColor = Color(0xFFF9FAFB),
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedBorderColor = Color(0xFFE5E7EB)
                                 )
-                            }
+                            )
                         }
 
-                        // 3. GRADE DE PRODUTOS (2 colunas)
-                        // A lista 'products' aqui já é a filtrada pelo ViewModel
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(products) { product ->
-                                ProductCard(
-                                    product = product,
-                                    onClick = {
-                                        /* Próximo passo: Abrir Modal de Detalhes */
+                        item {
+                            // Carrossel de Categorias (Filtro)
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(categories) { category ->
+                                    CategoryItem(
+                                        category = category,
+                                        isSelected = category.id == selectedId,
+                                        onClick = { viewModel.selectCategory(category.id) }
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+
+                        // Seções por Categoria
+                        val categoriesToDisplay = if (selectedId != null) {
+                            categories.filter { it.id == selectedId }
+                        } else {
+                            categories
+                        }
+
+                        items(categoriesToDisplay) { category ->
+                            val categoryProducts = products.filter { it.categoryId == category.id }
+                            
+                            if (categoryProducts.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 24.dp)
+                                ) {
+                                    Text(
+                                        text = category.name,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = Poppins,
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                        color = Color(0xFF2D3748)
+
+                                    )
+                                    
+                                    LazyRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        items(categoryProducts) { product ->
+                                            Box(modifier = Modifier.width(160.dp)) {
+                                                ProductCard(
+                                                    product = product,
+                                                    onClick = { /* Abrir Modal */ }
+                                                )
+                                            }
+                                        }
                                     }
-                                )
+                                }
                             }
                         }
                     }

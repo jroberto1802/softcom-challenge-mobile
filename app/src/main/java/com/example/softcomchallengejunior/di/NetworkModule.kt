@@ -22,10 +22,7 @@ object NetworkModule {
             supabaseUrl = "https://tqcxjulnbhouqpbijtwl.supabase.co",
             supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxY3hqdWxuYmhvdXFwYmlqdHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgxNTY0MzcsImV4cCI6MjA4MzczMjQzN30.zr1adsivWsZ5REeB4BbYZL7LpBiVTVxOLk4F42EeYhU"
         ) {
-            // Se 'serializer' der erro, use 'defaultSerializer' ou configure assim:
             install(Postgrest)
-
-            // Esta é a forma mais segura de configurar o JSON globalmente no Supabase
             defaultSerializer = KotlinXSerializer(Json {
                 ignoreUnknownKeys = true
                 coerceInputValues = true
