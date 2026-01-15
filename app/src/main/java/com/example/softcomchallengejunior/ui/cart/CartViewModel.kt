@@ -17,7 +17,6 @@ class CartViewModel @Inject constructor(
     private val repository: CartRepository
 ) : ViewModel() {
 
-    // Observa o banco de dados e transforma a lista de itens em um "Estado de UI"
     val cartItems: StateFlow<List<CartItemEntity>> = repository.getCartItems()
         .stateIn(
             scope = viewModelScope,
@@ -25,19 +24,34 @@ class CartViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    // Lógica para calcular o valor total (reativo)
     val totalPrice: StateFlow<Double> = cartItems.map { items ->
         items.sumOf { it.price * it.quantity }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
-    // Lógica para contar total de itens
     val totalItems: StateFlow<Int> = cartItems.map { items ->
         items.sumOf { it.quantity }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    fun addToCart(product: CartItemEntity) {
+    fun updateQuantity(item: CartItemEntity, increment: Boolean) {
         viewModelScope.launch {
-            repository.addToCart(product)
+            val newQuantity = if (increment) item.quantity + 1 else item.quantity - 1
+            if (newQuantity > 0) {
+                repository.addToCart(item.copy(quantity = newQuantity))
+            } else {
+                repository.removeFromCart(item)
+            }
+        }
+    }
+
+    fun removeItem(item: CartItemEntity) {
+        viewModelScope.launch {
+            repository.removeFromCart(item)
+        }
+    }
+
+    fun clearCart() {
+        viewModelScope.launch {
+            repository.clearCart()
         }
     }
 }

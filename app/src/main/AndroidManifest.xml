@@ -27,7 +27,12 @@
         </activity>
 
         <activity
-            android:name=".ProductDetailActivity"
+            android:name=".ui.detail.ProductDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SoftcomChallengeJunior" />
+
+        <activity
+            android:name=".ui.cart.CartActivity"
             android:exported="false"
             android:theme="@style/Theme.SoftcomChallengeJunior" />
 

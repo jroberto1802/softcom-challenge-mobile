@@ -6,9 +6,16 @@ import com.example.softcomchallengejunior.data.remote.dto.CategoryDto
 import com.example.softcomchallengejunior.data.remote.dto.ProductDto
 import com.example.softcomchallengejunior.domain.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
+
+sealed interface HomeUiEvent {
+    data class NavigateToDetails(val productJson: String) : HomeUiEvent
+}
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -19,6 +26,8 @@ class HomeViewModel @Inject constructor(
     private val _products = MutableStateFlow<List<ProductDto>>(emptyList())
     private val _selectedCategoryId = MutableStateFlow<Long?>(null)
     private val _searchQuery = MutableStateFlow("")
+    private val _uiEvent = Channel<HomeUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
     val searchQuery = _searchQuery.asStateFlow()
     val categories = _categories.asStateFlow()
     val selectedCategoryId = _selectedCategoryId.asStateFlow()
@@ -43,6 +52,13 @@ class HomeViewModel @Inject constructor(
         _searchQuery.value = newQuery
     }
 
+    fun onProductSelected(product: ProductDto) {
+        viewModelScope.launch {
+            val productJson = Json.encodeToString(product)
+            _uiEvent.send(HomeUiEvent.NavigateToDetails(productJson))
+        }
+    }
+
     init {
         fetchHomeData()
     }
@@ -50,21 +66,18 @@ class HomeViewModel @Inject constructor(
     private fun fetchHomeData() {
         viewModelScope.launch {
             try {
-                // Busca categorias e produtos do Repositório (Supabase)
                 _categories.value = repository.getCategories()
                 _products.value = repository.getProducts()
             } catch (e: Exception) {
-                // Aqui podes tratar erros (ex: Log.e ou uma mensagem na UI)
             }
         }
     }
 
-    // 3. Função para selecionar categoria (chamada pelo clique no card)
     fun selectCategory(categoryId: Long) {
         _selectedCategoryId.value = if (_selectedCategoryId.value == categoryId) {
-            null // Se clicar na mesma categoria, desmarca (mostra todos)
+            null
         } else {
-            categoryId // Filtra pela nova categoria
+            categoryId
         }
     }
 }
