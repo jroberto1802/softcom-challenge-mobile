@@ -5,18 +5,24 @@ import androidx.lifecycle.viewModelScope
 import com.example.softcomchallengejunior.data.local.entities.CartItemEntity
 import com.example.softcomchallengejunior.domain.repository.CartRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface CartUiEvent {
+    data class NavigateToCheckout(val totalPrice: Double) : CartUiEvent
+}
 @HiltViewModel
 class CartViewModel @Inject constructor(
     private val repository: CartRepository
 ) : ViewModel() {
-
+    private val _uiEvent = Channel<CartUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
     val cartItems: StateFlow<List<CartItemEntity>> = repository.getCartItems()
         .stateIn(
             scope = viewModelScope,
@@ -52,6 +58,15 @@ class CartViewModel @Inject constructor(
     fun clearCart() {
         viewModelScope.launch {
             repository.clearCart()
+        }
+    }
+
+    fun onCheckoutClicked() {
+        viewModelScope.launch {
+            // Se o carrinho estiver vazio, podemos evitar a navegação
+            if (cartItems.value.isNotEmpty()) {
+                _uiEvent.send(CartUiEvent.NavigateToCheckout(totalPrice.value))
+            }
         }
     }
 }

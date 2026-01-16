@@ -38,13 +38,10 @@ fun CartSummaryBar(
 ) {
     // Só exibe se houver itens no carrinho
     if (totalItems > 0) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp) // Padding para o card externo
-        ) {
+        Column() {
             Surface(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 color = Color.White,
                 shadowElevation = 8.dp // Elevação para o efeito de sombra
@@ -57,7 +54,8 @@ fun CartSummaryBar(
                     // Ícone e Detalhes do Carrinho
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
                     ) {
                         Surface(
                             modifier = Modifier.size(40.dp),

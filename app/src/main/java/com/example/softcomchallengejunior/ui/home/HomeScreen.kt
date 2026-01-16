@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +58,7 @@ import com.example.softcomchallengejunior.ui.components.ProductCard
 import com.example.softcomchallengejunior.ui.theme.Poppins
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.intellij.lang.annotations.JdkConstants
 import kotlin.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,22 +132,25 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-            Column {
-                CartSummaryBar(
-                    totalItems = totalItems,
-                    totalPrice = totalPrice,
-                    onViewCartClick = {
-                        val intent = Intent(context, CartActivity::class.java)
-                        context.startActivity(intent)
-                    }
-                )
-
+            Column (){
                 BottomNavigationBar(
                     currentRoute = "home",
                     onItemClick = { item -> /* Lógica de navegação */ }
                 )
             }
-        }
+        },
+        floatingActionButton = {
+            CartSummaryBar(
+                totalItems = totalItems,
+                totalPrice = totalPrice,
+                onViewCartClick = {
+                    val intent = Intent(context, CartActivity::class.java)
+                    context.startActivity(intent)
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
+
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

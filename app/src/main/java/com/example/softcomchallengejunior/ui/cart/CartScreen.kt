@@ -1,5 +1,6 @@
 package com.example.softcomchallengejunior.ui.cart
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -45,12 +47,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.softcomchallengejunior.data.local.entities.CartItemEntity
+import com.example.softcomchallengejunior.ui.order.checkout.CartCheckoutActivity
 import com.example.softcomchallengejunior.ui.theme.Poppins
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +67,19 @@ fun CartScreen(
     val cartItems by viewModel.cartItems.collectAsState()
     val totalPrice by viewModel.totalPrice.collectAsState()
     val totalItems by viewModel.totalItems.collectAsState()
-
+    val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is CartUiEvent.NavigateToCheckout -> {
+                    val intent = Intent(context, CartCheckoutActivity::class.java).apply {
+                        putExtra("TOTAL_PAID", event.totalPrice)
+                    }
+                    context.startActivity(intent)
+                }
+            }
+        }
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

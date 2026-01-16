@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.softcomchallengejunior.ui.theme.SoftcomChallengeJuniorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,10 +15,13 @@ class CartActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SoftcomChallengeJuniorTheme {
+                val viewModel: CartViewModel = hiltViewModel()
                 CartScreen(
                     onBackClick = { finish() },
                     onCheckoutClick = {
-                        // Lógica de finalizar pedido
+                        viewModel.clearCart() // Limpa o carrinho após o checkout
+                        finish() // Fecha a tela do carrinho após o checkout
+                        viewModel.onCheckoutClicked() // Navega para a tela de checkout
                     }
                 )
             }

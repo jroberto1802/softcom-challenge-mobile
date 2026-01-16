@@ -173,12 +173,14 @@ fun ProductDetailScreen(viewModel: ProductDetailViewModel, onBackClick: () -> Un
                                 Text(
                                     "Adicionar ao Carrinho",
                                     color = Color.White,
+                                    fontFamily = Poppins,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 )
                                 Text(
                                     "R$ ${String.format("%.2f", totalPrice)}",
                                     color = Color.White,
+                                    fontFamily = Poppins,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 )
